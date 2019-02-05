@@ -51,19 +51,41 @@ function btnClearHighlight(){
 //--------------------------------------------
 
 function inputValue(buttonValue){
-  	document.getElementById('telNo').value+=buttonValue;
-  	loginNumber +=buttonValue;
+  	
+  	
+  	if (buttonValue != "OK" && buttonValue != "C") {
+  		document.getElementById('telNo').value+=buttonValue;
+  	  	loginNumber +=buttonValue;
+	}else if (buttonValue == "OK") {
+		postLoginRequest();
+	}else { 
+		clearInput();
+	}
   	
   }
 
 // For C value case
 function clearInput(){
-  	document.getElementById('telNo').value="";
+	loginNumber = "";
+	document.getElementById('telNo').value=loginNumber;
   }
 
 //For OK value case
 function postLoginRequest(){
-    document.getElementById('telNo').value=loginNumber;
+	var goRequest = new XMLHttpRequest();
+	var params = {
+	    "username_login":"gi",
+	    "password_login": "1234"
+	  }
+	
+	goRequest.open("POST", "https://dry-peak-40603.herokuapp.com/login_test");
+	goRequest.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+	
+	goRequest.onload = function () {
+	    var ourData = JSON.parse(goRequest.responseText);
+	    document.getElementById('kata').innerHTML=ourData.link;
+	  };
+	goRequest.send(JSON.stringify(params));
   }
 
 
