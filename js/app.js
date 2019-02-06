@@ -57,7 +57,11 @@ function inputValue(buttonValue){
   		document.getElementById('telNo').value+=buttonValue;
   	  	loginNumber +=buttonValue;
 	}else if (buttonValue == "OK") {
+		//localStorage.clear();
 		postLoginRequest();
+		console.log(localStorage.getItem("link"));
+		document.location.assign("testPage.html");
+		
 	}else { 
 		clearInput();
 	}
@@ -83,9 +87,15 @@ function postLoginRequest(){
 	
 	goRequest.onload = function () {
 	    var ourData = JSON.parse(goRequest.responseText);
-	    document.getElementById('kata').innerHTML=ourData.link;
+	    // save to local storage
+	    localStorage.setItem("token", ourData.key);
+	    localStorage.setItem("link" , ourData.link);
+	    console.log(ourData.link);
+	    
+	    //document.getElementById('kata').innerHTML=ourData.link;
 	  };
 	goRequest.send(JSON.stringify(params));
+
   }
 
 
