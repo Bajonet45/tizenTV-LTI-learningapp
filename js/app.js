@@ -77,7 +77,7 @@ function inputValue(buttonValue){
 		
 		if(localStorage.getItem("token") != "Authentication failed. User not found."){
 	  		console.log(localStorage.getItem("token"));
-	  		document.location.assign("testPage.html");
+	  		document.location.assign("home.html");
 	  	}else {
 	  		document.getElementById('kata').innerHTML="wrong";
 	  	}
