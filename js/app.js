@@ -14,8 +14,8 @@ document.getElementById("00").style.border = "10px solid #008CBA";
 //--------------------------------------------
 function shifting(verticalShift,horizontalShift){
 	
-	newVertical		= vertical + verticalShift;
-	newHorizontal	= horizontal + horizontalShift;
+	var newVertical		= vertical + verticalShift;
+	var newHorizontal	= horizontal + horizontalShift;
 	if (newVertical <= 3 && newVertical >=0) {
 		vertical 	= newVertical;
 	} else {
@@ -51,22 +51,43 @@ function btnClearHighlight(){
 //--------------------------------------------
 
 function inputValue(buttonValue){
-  	
+	localStorage.clear();
   	
   	if (buttonValue != "OK" && buttonValue != "C") {
   		document.getElementById('telNo').value+=buttonValue;
   	  	loginNumber +=buttonValue;
 	}else if (buttonValue == "OK") {
-		//localStorage.clear();
-		postLoginRequest();
-		console.log(localStorage.getItem("link"));
-		document.location.assign("testPage.html");
 		
-	}else { 
+//		postLoginRequest();
+		var goRequest = new XMLHttpRequest();
+		var params = {
+		    "password_login": loginNumber
+		  }
+		
+		goRequest.open("POST", "https://dry-peak-40603.herokuapp.com/login", false);
+		goRequest.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+		
+		goRequest.onload = function () {
+		    var ourData = JSON.parse(goRequest.responseText);
+		    // save to local storage
+		    localStorage.setItem("token", ourData.key);
+
+		  };
+		goRequest.send(JSON.stringify(params));
+		
+		if(localStorage.getItem("token") != "Authentication failed. User not found."){
+	  		console.log(localStorage.getItem("token"));
+	  		document.location.assign("testPage.html");
+	  	}else {
+	  		document.getElementById('kata').innerHTML="wrong";
+	  	}
+		
+	} else { 
 		clearInput();
 	}
   	
   }
+
 
 // For C value case
 function clearInput(){
@@ -75,28 +96,26 @@ function clearInput(){
   }
 
 //For OK value case
-function postLoginRequest(){
-	var goRequest = new XMLHttpRequest();
-	var params = {
-	    "username_login":"gi",
-	    "password_login": "1234"
-	  }
-	
-	goRequest.open("POST", "https://dry-peak-40603.herokuapp.com/login_test");
-	goRequest.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-	
-	goRequest.onload = function () {
-	    var ourData = JSON.parse(goRequest.responseText);
-	    // save to local storage
-	    localStorage.setItem("token", ourData.key);
-	    localStorage.setItem("link" , ourData.link);
-	    console.log(ourData.link);
-	    
-	    //document.getElementById('kata').innerHTML=ourData.link;
-	  };
-	goRequest.send(JSON.stringify(params));
-
-  }
+//function postLoginRequest(){
+//	var goRequest = new XMLHttpRequest();
+//	var params = {
+//	    "password_login": loginNumber
+//	  }
+//	
+//	goRequest.open("POST", "https://dry-peak-40603.herokuapp.com/login");
+//	goRequest.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+//	
+//	goRequest.onload = function () {
+//	    var ourData = JSON.parse(goRequest.responseText);
+//	    // save to local storage
+//	    localStorage.setItem("token", ourData.key);
+//	    console.log(ourData);
+//	    
+//	    //document.getElementById('kata').innerHTML=ourData.link;
+//	  };
+//	goRequest.send(JSON.stringify(params));
+//
+//  }
 
 
 // Remote event listener IDs:
@@ -117,7 +136,7 @@ document.addEventListener('keydown', function(remoteEvent) {
 	  case 13:
 		  var pressedValue = document.getElementById(btnFocusPointer).value;
 		  inputValue(pressedValue);
-		  document.getElementById('kata').innerHTML=pressedValue;
+//		  document.getElementById('kata').innerHTML=pressedValue;
 		    break;
 	  case 37:
 		  shifting(0, -1);
